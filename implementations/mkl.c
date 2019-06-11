@@ -65,7 +65,7 @@ int mkl_compare(int dim)
 	}
 	s_elapsed = (dsecnd() - s_initial) / LOOP_COUNT;
 
-	printf("Matrix multiplication using Intel MKL dgemm took %.5f msecs\n", s_elapsed);
+	printf("Matrix multiplication using Intel MKL dgemm took %.5f msecs\n", s_elapsed * 1000);
 
 	//printf(" Deallocating memory \n\n");
 	mkl_free(A);
