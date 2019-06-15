@@ -1,0 +1,39 @@
+Using dim = 32
+Standard Multiplication took 1.00 msecs
+Strassen Multiplication (1 step) took 0.10 msecs
+Strassen Multiplication (2 step) took 0.10 msecs
+Strassen Multiplication (3 step) took 0.60 msecs
+Using dim = 64
+Standard Multiplication took 0.00 msecs
+Strassen Multiplication (1 step) took 0.10 msecs
+Strassen Multiplication (2 step) took 0.30 msecs
+Strassen Multiplication (3 step) took 0.70 msecs
+Using dim = 128
+Standard Multiplication took 0.00 msecs
+Strassen Multiplication (1 step) took 0.50 msecs
+Strassen Multiplication (2 step) took 1.30 msecs
+Strassen Multiplication (3 step) took 1.40 msecs
+Using dim = 256
+Standard Multiplication took 3.00 msecs
+Strassen Multiplication (1 step) took 2.00 msecs
+Strassen Multiplication (2 step) took 10.40 msecs
+Strassen Multiplication (3 step) took 7.60 msecs
+Using dim = 512
+Standard Multiplication took 9.00 msecs
+Strassen Multiplication (1 step) took 20.80 msecs
+Strassen Multiplication (2 step) took 57.00 msecs
+Strassen Multiplication (3 step) took 56.10 msecs
+Using dim = 1024
+Standard Multiplication took 69.00 msecs
+Strassen Multiplication (1 step) took 81.10 msecs
+Strassen Multiplication (2 step) took 121.70 msecs
+Strassen Multiplication (3 step) took 126.30 msecs
+Using dim = 2048
+Standard Multiplication took 303.00 msecs
+Strassen Multiplication (1 step) took 379.80 msecs
+Strassen Multiplication (2 step) took 617.70 msecs
+Strassen Multiplication (3 step) took 1060.60 msecs
+Using dim = 4096
+Standard Multiplication took 2517.00 msecs
+Strassen Multiplication (1 step) took 3114.10 msecs
+Strassen Multiplication (2 step) took 3944.50 msecs
