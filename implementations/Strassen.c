@@ -20,6 +20,11 @@ int compare_strassen_and_naive(int dim) {
 	clock_t start = clock(), diff;
 	float** stdRes = standardMultiplication(matrixA, matrixB, n);
 	diff = clock() - start;
+	for (int i = 0;i < n;i++)
+	{
+		free(stdRes[i]);
+	}
+	free(stdRes);
 
 	int msec = diff * 1000 / CLOCKS_PER_SEC;
 	printf("Standard Multiplication took %d msecs\n", msec);
@@ -140,6 +145,11 @@ float** strassensMultRec(float** matrixA, float** matrixB, int n, int threshold)
 		compose(c12, result, 0, n / 2, n / 2);
 		compose(c21, result, n / 2, 0, n / 2);
 		compose(c22, result, n / 2, n / 2, n / 2);
+
+		free(c11);
+		free(c12);
+		free(c21);
+		free(c22);
 	}
 	else {
 		//This is the terminating condition for using strassen.

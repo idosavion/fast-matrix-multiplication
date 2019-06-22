@@ -37,3 +37,4 @@ Using dim = 4096
 Standard Multiplication took 2517.00 msecs
 Strassen Multiplication (1 step) took 3114.10 msecs
 Strassen Multiplication (2 step) took 3944.50 msecs
+Strassen Multiplication (3 step) took 4951.50 msecs
