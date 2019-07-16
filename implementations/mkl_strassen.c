@@ -1,14 +1,8 @@
-#include "mkl.h"
 #include <time.h>
 #include <stdio.h>
+#include <math.h>
 #include "mkl_strassen.h"
-#define LOOP_COUNT 10
-
-void mult_a11b11(int n, double* matrixA, double* matrixB, double* matrixC)
-{
-	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-	            n / 2, n / 2, n / 2, 1, matrixA, n, matrixB, n, 0, matrixC, n);
-}
+#define LOOP_COUNT 3
 
 int compare_strassen_and_mkl(int dim)
 {
@@ -22,11 +16,10 @@ int compare_strassen_and_mkl(int dim)
 		pow = pow * 2;
 	}
 	n = pow;
-	double* matrixA = mkl_malloc(pow * pow * sizeof(double), 64);
-	double* matrixB = mkl_malloc(pow * pow * sizeof(double), 64);
+	double* matrixA = (double*) mkl_malloc(pow * pow * sizeof(double), 64);
+	double* matrixB = (double*) mkl_malloc(pow * pow * sizeof(double), 64);
+	double* matrixC_naive = (double*) mkl_malloc(pow * pow * sizeof(double), 64);
 
-	double* matrixC_naive = mkl_malloc(pow * pow * sizeof(double), 64);
-	double* matrixC_strassen = mkl_malloc(pow * pow * sizeof(double), 64);
 	for (int i = 0; i < n * n; i+=2)
 	{
 		matrixA[i] = 0;
@@ -35,9 +28,9 @@ int compare_strassen_and_mkl(int dim)
 		matrixB[i] = 0;
 		matrixB[i + 1] = i + 1;
 		matrixC_naive[i] = 0;
-		matrixC_strassen[i] = 0;
 	}
-
+	FILE* fp = fopen("log.txt", "a+");
+	fprintf(fp, "Using dim = %d\n", dim);
 	clock_t start = clock(), diff;
 	for (int i = 0; i < LOOP_COUNT; i++)
 	{
@@ -47,38 +40,50 @@ int compare_strassen_and_mkl(int dim)
 	diff = clock() - start;
 	double msec = diff * 1000 / (CLOCKS_PER_SEC * LOOP_COUNT);
 	printf("Standard Multiplication took %.2f msecs\n", msec);
+	fprintf(fp, "Standard Multiplication took %.2f msecs\n", msec);
 
-
+	unsigned mem = memoryRequirements(9, n, 2, 1);
 	start = clock(), diff;
+	double* work = (double*)MKL_malloc(mem * sizeof(double), 64);
 	for (int i = 0; i < LOOP_COUNT; i++)
 	{
-		matrixC_naive = strassensMultRec(matrixA, matrixB, matrixC_naive, n,1);
+		matrixC_naive = strassensMultRec(matrixA, matrixB, matrixC_naive, n,1, work);
 	}
 	// printMatrix(matrixC_naive, pow);
+	MKL_free(work);
 	diff = clock() - start;
 	msec = (double)diff * 1000 / (CLOCKS_PER_SEC * LOOP_COUNT);
 	printf("Strassen Multiplication (1 step) took %.2f msecs\n", msec);
+	fprintf(fp, "Strassen Multiplication (1 step) took %.2f msecs\n", msec);
 
 	
+	mem = memoryRequirements(9, n, 2, 2);
 	start = clock(), diff;
+	work = (double*)MKL_malloc(mem * sizeof(double), 64);
 	for (int i = 0; i < LOOP_COUNT; i++)
 	{
-		matrixC_naive = strassensMultRec(matrixA, matrixB, matrixC_naive, n,2);
+		matrixC_naive = strassensMultRec(matrixA, matrixB, matrixC_naive, n,2, work);
 	}
 	// printMatrix(matrixC_naive, pow);
+	MKL_free(work);
 	diff = clock() - start;
 	msec = (double)diff * 1000 / (CLOCKS_PER_SEC * LOOP_COUNT);
 	printf("Strassen Multiplication (2 step) took %.2f msecs\n", msec);
+	fprintf(fp, "Strassen Multiplication (2 step) took %.2f msecs\n", msec);
 
+	mem = memoryRequirements(9, n, 2, 3);
 	start = clock(), diff;
+	work = (double*)MKL_malloc(mem * sizeof(double), 64);
 	for (int i = 0; i < LOOP_COUNT; i++)
 	{
-		matrixC_naive = strassensMultRec(matrixA, matrixB, matrixC_naive, n,3);
+		matrixC_naive = strassensMultRec(matrixA, matrixB, matrixC_naive, n,3, work);
 	}
 	// printMatrix(matrixC_naive, pow);
+	MKL_free(work);
 	diff = clock() - start;
 	msec = (double)diff * 1000 / (CLOCKS_PER_SEC * LOOP_COUNT);
 	printf("Strassen Multiplication (3 step) took %.2f msecs\n", msec);
+	fprintf(fp, "Strassen Multiplication (3 step) took %.2f msecs\n", msec);
 
 	// printf("\nStrassen's Multiplication Output:\n");
 	//
@@ -93,276 +98,387 @@ int compare_strassen_and_mkl(int dim)
 	mkl_free(matrixA);
 	mkl_free(matrixB);
 	mkl_free(matrixC_naive);
-	mkl_free(matrixC_strassen);
 
 	return 0;
 }
 
 /*
-* Function to Print Matrix
-*/
-void printMatrix(double* matrix, int n)
-{
-	int i, j;
-	for (i = 0; i < n; i++)
-	{
-		for (j = 0; j < n; j++)
-		{
-			printf("   %.4f   ", matrix[i * n + j]);
-		}
-		printf("\n");
-	}
-	printf("\n");
-}
-
-/*
-* Standard Matrix multiplication with O(n) time complexity.
-*/
-double* mkl_multiplication(const double* matrixA, const double* matrixB, double* matrixC, int n)
-{
-	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-	            n, n, n, 1, matrixA, n, matrixB, n, 0, matrixC, n);
-	return matrixC;
-}
-
-/*
 * Wrapper function over strassensMultRec.
 */
-double* strassensMultiplication(const double* matrixA, const double* matrixB, double* matrixC, int n, int steps_left)
+double* strassensMultiplication(const double* matrixA, const double* matrixB, double* matrixC, int n, int steps_left, double* work)
 {
-	double* result = strassensMultRec(matrixA, matrixB, matrixC, n, steps_left);
+	double* result = strassensMultRec(matrixA, matrixB, matrixC, n, steps_left, work);
 	return result;
 }
 
-void create_m1(const double* matrixA, const double* matrixB, int n, int steps_left, double* m1)
-{
-	double* add_A11_A22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, matrixA, n, 1, &matrixA[n * n / 2 + n / 2], n, add_A11_A22, n / 2);
-	//printf("A11+A22:\n:");
-	//printMatrix(add_A11_A22, n / 2);
-	double* add_B11_B22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, matrixB, n, 1, &matrixB[n * n / 2 + n / 2], n, add_B11_B22, n / 2);
-	//printf("B11+B22:\n:");
-	//printMatrix(add_B11_B22, n / 2);
-	strassensMultRec(add_A11_A22, add_B11_B22, m1, n / 2, steps_left - 1);
-	//printf("\nMatrix M1:\n");
-	//printMatrix(m1, n / 2);
-	mkl_free(add_A11_A22);
-	mkl_free(add_B11_B22);
+
+static void S1_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldA / 2, ldA / 2, 1, matrixA, ldA, 1, &matrixA[(ldA / 2) * ldA + ldA / 2], ldA, S, ldA / 2);
+	}
+	else {
+
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[j * ldA + k] + matrixA[(ldA / 2 + j) * ldA + (ldA / 2 + k)];
+			}
+		}
+	}
 }
 
-void create_m2(const double* matrixA, const double* matrixB, int n, int steps_left, double* m2)
-{
-	double* add_A21_A22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixA[n * n / 2], n, 1, &matrixA[n * n / 2 + n / 2], n, add_A21_A22,
-	             n / 2);
-	//printf("A21+A22:\n:");
-	//printMatrix(add_A21_A22, n / 2);
-	double* b11 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, matrixB, n, 0, &matrixB[n * n / 2 + n / 2], n, b11, n / 2);
-	//printf("b11:\n:");
-	//printMatrix(b11, n / 2);
-	strassensMultRec(add_A21_A22, b11, m2, n / 2, steps_left - 1);
-	//printf("\nMatrix M2:\n");
-	//printMatrix(m2, n / 2);
-	mkl_free(add_A21_A22);
-	mkl_free(b11);
-}
+static void T1_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldB / 2, ldB / 2, 1, matrixB, ldB, 1, &matrixB[ldB * ldB / 2 + ldB / 2], ldB, T, ldB / 2);
+	}
+	else {
 
-void create_m3(const double* matrixA, const double* matrixB, int n, int steps_left, double* m3)
-{
-	double* sub_b12_b22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixB[n / 2], n, -1, &matrixB[n * n / 2 + n / 2], n, sub_b12_b22,
-	             n / 2);
-	//printf("B12-B22:\n:");
-	//printMatrix(sub_b12_b22, n / 2);
-	double* a11 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, matrixA, n, 0, &matrixB[n * n / 2 + n / 2], n, a11, n / 2);
-	//printf("A11:\n:");
-	//printMatrix(a11, n / 2);
-	strassensMultRec(a11,sub_b12_b22, m3, n / 2, steps_left - 1);
-	//printf("\nMatrix M3:\n");
-	//printMatrix(m3, n / 2);
-	mkl_free(sub_b12_b22);
-	mkl_free(a11);
-}
-
-void create_m4(const double* matrixA, const double* matrixB, int n, int steps_left, double* m4)
-{
-	double* sub_b21_b11 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixB[n * n / 2], n, -1, matrixB, n, sub_b21_b11,
-	             n / 2);
-	//printf("B21-B11:\n:");
-	//printMatrix(sub_b21_b11, n / 2);
-	double* a22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixA[n* n /2 + n/2], n, 0, &matrixB[n * n / 2 + n / 2], n, a22, n / 2);
-	//printf("A22:\n:");
-	//printMatrix(a22, n / 2);
-	strassensMultRec(a22,sub_b21_b11, m4, n / 2, steps_left - 1);
-	//printf("\nMatrix M4:\n");
-	//printMatrix(m4, n / 2);
-	mkl_free(sub_b21_b11);
-	mkl_free(a22);
-}
-
-void create_m5(const double* matrixA, const double* matrixB, int n, int steps_left, double* m5)
-{
-	double* add_a11_a12 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, matrixA, n, 1, &matrixA[n / 2], n, add_a11_a12,
-	             n / 2);
-	//printf("A11+A12:\n:");
-	//printMatrix(add_a11_a12, n / 2);
-	double* b22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 0, matrixB, n, 1, &matrixB[n * n / 2 + n / 2], n, b22, n / 2);
-	//printf("B22:\n:");
-	//printMatrix(b22, n / 2);
-	strassensMultRec(add_a11_a12, b22, m5, n / 2, steps_left - 1);
-	//printf("\nMatrix M5:\n");
-	//printMatrix(m5, n / 2);
-	mkl_free(add_a11_a12);
-	mkl_free(b22);
-}
-
-void create_m6(const double* matrixA, const double* matrixB, int n, int steps_left, double* m6)
-{
-	double* sub_a21_a11 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixA[n * n / 2], n, -1, matrixA, n, sub_a21_a11,
-	             n / 2);
-	//printf("A21-A11:\n:");
-	//printMatrix(sub_a21_a11, n / 2);
-	double* add_b11_b12 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, matrixB, n, 1, &matrixB[n / 2], n, add_b11_b12, n / 2);
-	//printf("B11 + B12:\n:");
-	//printMatrix(add_b11_b12, n / 2);
-	strassensMultRec(sub_a21_a11, add_b11_b12, m6, n / 2, steps_left - 1);
-	//printf("\nMatrix M6:\n");
-	//printMatrix(m6, n / 2);
-	mkl_free(sub_a21_a11);
-	mkl_free(add_b11_b12);
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[j * ldB + k] + matrixB[(ldB / 2 + j) * ldB + (ldB / 2 + k)];
+			}
+		}
+	}
 }
 
 
-void create_m7(const double* matrixA, const double* matrixB, int n, int steps_left, double* m7)
-{
-	double* sub_a12_a22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixA[n / 2], n, -1, &matrixA[n * n / 2 + n / 2], n, sub_a12_a22,
-	             n / 2);
-	//printf("A12-A22:\n:");
-	//printMatrix(sub_a12_a22, n / 2);
-	double* add_b21_b22 = create_zero_mat(n / 2);
-	mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, &matrixB[n * n / 2], n, 1, &matrixB[n * n / 2 + n / 2], n, add_b21_b22,
-	             n / 2);
-	//printf("B21 + B22:\n:");
-	//printMatrix(add_b21_b22, n / 2);
-	strassensMultRec(sub_a12_a22, add_b21_b22, m7, n / 2, steps_left - 1);
-	//printf("\nMatrix M7:\n");
-	//printMatrix(m7, n / 2);
-	mkl_free(sub_a12_a22);
-	mkl_free(add_b21_b22);
+static void S2_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldA / 2, ldA / 2, 1, &matrixA[ldA * ldA / 2], ldA, 1, &matrixA[ldA * ldA / 2 + ldA / 2], ldA, S, ldA / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[ldA * (ldA / 2 + j) + k] + matrixA[(ldA / 2 + j) * ldA + (ldA / 2 + k)];
+			}
+		}
+	}
+}
+
+static void T2_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatcopy('R', 'N', ldB / 2, ldB / 2, 1, matrixB, ldB, T, ldB / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[j * ldB + k];
+			}
+		}
+	}
+}
+
+static void S3_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatcopy('R', 'N', ldA / 2, ldA / 2, 1, matrixA, ldA, S, ldA / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[j * ldA + k];
+			}
+		}
+	}
+}
+
+static void T3_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldB / 2, ldB / 2, 1, &matrixB[ldB / 2], ldB, -1, &matrixB[ldB * ldB / 2 + ldB / 2], ldB, T, ldB / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[j * ldB + (ldB / 2) + k] - matrixB[(ldB / 2 + j) * ldB + (ldB / 2 + k)];
+			}
+		}
+	}
+}
+
+static void S4_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatcopy('R', 'N', ldA / 2, ldA / 2, 1, &matrixA[ldA * ldA / 2 + ldA / 2], ldA, S, ldA / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[(ldA / 2 + j) * ldA + (ldA / 2 + k)];
+			}
+		}
+	}
+}
+
+static void T4_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldB / 2, ldB / 2, 1, &matrixB[ldB * ldB / 2], ldB, -1, matrixB, ldB, T, ldB / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[(ldB / 2 + j) * ldB + k] - matrixB[j * ldB + k];
+			}
+		}
+	}
+}
+
+static void S5_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldA / 2, ldA / 2, 1, matrixA, ldA, 1, &matrixA[ldA / 2], ldA, S, ldA /2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[j * ldA + k] + matrixA[j * ldA + (ldA / 2 + k)];
+			}
+		}
+	}
+}
+
+static void T5_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatcopy('R', 'N', ldB / 2, ldB / 2, 1, &matrixB[ldB * ldB / 2 + ldB / 2], ldB, T, ldB / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[j * ldB + k];
+			}
+		}
+	}
+}
+
+static void S6_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldA / 2, ldA / 2, 1, &matrixA[ldA * ldA / 2], ldA, -1, matrixA, ldA, S, ldA / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[(ldA / 2 + j) * ldA + k] - matrixA[j * ldA + k];
+			}
+		}
+	}
+}
+
+static void T6_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldB / 2, ldB / 2, 1, matrixB, ldB, 1, &matrixB[ldB / 2], ldB, T, ldB / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[j * ldB + k] + matrixB[j * ldB + (ldB / 2 + k)];
+			}
+		}
+	}
+}
+
+static void S7_add(const double* matrixA, double* S, int ldA) {
+	if (ldA <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldA / 2, ldA / 2, 1, &matrixA[ldA / 2], ldA, -1, &matrixA[ldA * ldA / 2 + ldA / 2], ldA, S, ldA /2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldA / 2; j++) {
+			for (int k = 0; k < ldA / 2; k++) {
+				S[j * (ldA / 2) + k] = matrixA[j * ldA + (ldA / 2 + k)] - matrixA[(ldA / 2 + j) * ldA + (ldA / 2 + k)];
+			}
+		}
+	}
+}
+
+static void T7_add(const double* matrixB, double* T, int ldB) {
+	if (ldB <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldB / 2, ldB / 2, 1, &matrixB[ldB * ldB / 2], ldB, 1, &matrixB[ldB * ldB / 2 + ldB / 2], ldB, T, ldB / 2);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldB / 2; j++) {
+			for (int k = 0; k < ldB / 2; k++) {
+				T[j * (ldB / 2) + k] = matrixB[(ldB / 2 + j) * ldB + k] + matrixB[(ldB / 2 + j) * ldB + (ldB / 2 + k)];
+			}
+		}
+	}
+}
+
+static void Q1_add(double* matrixC, int ldC, double* m1, double* m4, double* m5, double* m7) {
+	if (ldC <= INTEL_MKL_THRESH) {
+		vdAdd(ldC / 2 * ldC / 2, m1, m4, m1);
+		//mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m1, ldC / 2, 1, m4, ldC / 2, matrixC, ldC);
+		//mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, -1, m5, ldC / ldC, 1, matrixC, ldC, matrixC, ldC);
+		mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m1, ldC / ldC, -1, m5, ldC, matrixC, ldC);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldC / 2; j++) {
+			for (int k = 0; k < ldC / 2; k++) {
+				matrixC[j * ldC + k] = m1[j * ldC / 2 + k] + m4[j * ldC / 2 + k] - m5[j * ldC / 2 + k] + m7[j * ldC / 2 + k];
+			}
+		}
+	}
+}
+
+static void Q2_add(double* matrixC, int ldC, double* m3, double* m5) {
+	// creating C12
+	if (ldC <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m3, ldC / 2, 1, m5, ldC / 2, matrixC, ldC);
+}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldC / 2; j++) {
+			for (int k = 0; k < ldC / 2; k++) {
+				matrixC[j * ldC + (ldC / 2 + k)] = m3[j * ldC / 2 + k] + m5[j * ldC / 2 + k];
+			}
+		}
+	}
+}
+
+static void Q3_add(double* matrixC, int ldC, double* m2, double* m4) {
+	// creating C21
+	if (ldC <= INTEL_MKL_THRESH) {
+		mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m2, ldC / 2, 1, m4, ldC / 2, matrixC, ldC);
+	}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldC / 2; j++) {
+			for (int k = 0; k < ldC / 2; k++) {
+				matrixC[(j + ldC / 2) * ldC + k] = m2[j * ldC / 2 + k] + m4[j * ldC / 2 + k];
+			}
+		}
+	}
+}
+
+static void Q4_addSubAddAdd(double* matrixC, int ldC, double* m1, double* m2, double* m3, double* m6) {
+	// creating C22
+	if (ldC <= INTEL_MKL_THRESH) {
+		vdAdd(ldC / 2 * ldC / 2, m1, m3, m1);
+		vdAdd(ldC / 2 * ldC / 2, m1, m6, m1);
+		mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m1, ldC / 2, -1, m2, ldC / 2, matrixC, ldC);
+		//mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m3, ldC / ldC, 1, matrixC, ldC, matrixC, ldC);
+		//mkl_domatadd('R', 'N', 'N', ldC / 2, ldC / 2, 1, m6, ldC / ldC, 1, matrixC, ldC, matrixC, ldC);
+}
+	else {
+#if defined(_OPENMP)
+#pragma omp parallel for
+#endif
+		for (int j = 0; j < ldC / 2; j++) {
+			for (int k = 0; k < ldC / 2; k++) {
+				matrixC[(j + ldC / 2) * ldC + (ldC / 2 + k)] = m1[j * ldC / 2 + k] - m2[j * ldC / 2 + k] + m3[j * ldC / 2 + k] + m6[j * ldC / 2 + k];
+			}
+		}
+	}
 }
 
 
 /*
 * Strassen's Multiplication algorithm using Divide and Conquer technique.
 */
-double* strassensMultRec(const double* matrixA, const double* matrixB, double* matrixC, int n, int steps_left)
+double* strassensMultRec(const double* matrixA, const double* matrixB, double* matrixC, int n, int steps_left, double* work)
 {
 	double* result = 0;
-	if (steps_left > 0)
-	{
-		//Divide the matrix
-		double* m1 = create_zero_mat(n / 2);
-		double* m2 = create_zero_mat(n / 2);
-		double* m3 = create_zero_mat(n / 2);
-		double* m4 = create_zero_mat(n / 2);
-		double* m5 = create_zero_mat(n / 2);
-		double* m6 = create_zero_mat(n / 2);
-		double* m7 = create_zero_mat(n / 2);
 
-		create_m1(matrixA, matrixB, n, steps_left, m1);
-		create_m2(matrixA, matrixB, n, steps_left, m2);
-		create_m3(matrixA, matrixB, n, steps_left, m3);
-		create_m4(matrixA, matrixB, n, steps_left, m4);
-		create_m5(matrixA, matrixB, n, steps_left, m5);
-		create_m6(matrixA, matrixB, n, steps_left, m6);
-		create_m7(matrixA, matrixB, n, steps_left, m7);
-
-		// printf("M1:\n:");
-		// printMatrix(m1, n/2);
-		// printf("M2:\n:");
-		// printMatrix(m2, n / 2);
-		// printf("M3:\n:");
-		// printMatrix(m3, n/2);
-		// printf("M4:\n:");
-		// printMatrix(m4, n/2);
-		// printf("M5:\n:");
-		// printMatrix(m5, n/2);
-		// printf("M6:\n:");
-		// printMatrix(m6, n/2);
-		// printf("M7:\n:");
-		// printMatrix(m7, n/2);
-
-		// creating C11
-		//printMatrix(matrixC, n);
-
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m1, n / 2, 1, m4, n / 2,matrixC, n);
-		// printf("C11 = M1 + M4:\n");
-		//printMatrix(matrixC, n);
-
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, -1, m5, n / 2, 1, matrixC, n,matrixC, n);
-		//printf("C11 = C11 - M5:\n");
-		//printMatrix(matrixC, n);
-
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m7, n / 2, 1, matrixC, n,matrixC, n);
-		//printf("C11 = C11 + M7:\n");
-
-		//printMatrix(matrixC, n);
-		
-		// creating C21
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m3, n / 2, 1, m5, n / 2, &matrixC[n / 2], n);
-		//printMatrix(matrixC, n);
-		// creating C12
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m2, n / 2, 1, m4, n / 2, &matrixC[n * n / 2], n);
-		//printMatrix(matrixC, n);
-		// creating C22
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m1, n / 2, -1, m2, n / 2, &matrixC[n * n /2 + n/2], n);
-		//printf("C22 = M1 - M2:\n");
-		//printMatrix(matrixC, n);
-
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m3, n / 2, 1, matrixC, n, &matrixC[n * n / 2 + n / 2], n);
-		//printf("C22 = C22 + M3:\n");
-		//printMatrix(matrixC, n);
-
-		mkl_domatadd('R', 'N', 'N', n / 2, n / 2, 1, m6, n / 2, 1, matrixC, n, &matrixC[n * n / 2 + n / 2], n);
-		//printf("C22 = C22 + M6:\n");
-		//printMatrix(matrixC, n);
-
-		mkl_free(m1);
-		mkl_free(m2);
-		mkl_free(m3);
-		mkl_free(m4);
-		mkl_free(m5);
-		mkl_free(m6);
-		mkl_free(m7);
-		
-	}
-	else
+	if (steps_left == 0)
 	{
 		//This is the terminating condition for using strassen.
 		result = mkl_multiplication(matrixA, matrixB, matrixC, n);
+		return result;
 	}
-	return matrixC;
-}
 
-/*
-* This method combines the matrix in the result matrix
-*/
-double* create_zero_mat(int dim)
-{
-	double* mat = mkl_malloc(dim * dim * sizeof(double), 64);
-	for (int i = 0; i < dim * dim; i++)
-	{
-		mat[i] = 0;
-	}
-	return mat;
+	//Divide the matrix
+	double* m1 = work;
+	double* m2 = &m1[n / 2 * n / 2];
+	double* m3 = &m1[2 * n / 2 * n / 2];
+	double* m4 = &m1[3 * n / 2 * n / 2];
+	double* m5 = &m1[4 * n / 2 * n / 2];
+	double* m6 = &m1[5 * n / 2 * n / 2];
+	double* m7 = &m1[6 * n / 2 * n / 2];
+	double* S = &m1[7 * n / 2 * n / 2];
+	double* T = &m1[8 * n / 2 * n / 2];
+	double* nextWork = &work[9 * n / 2 * n / 2];
+	
+	S1_add(matrixA, S, n);
+	T1_add(matrixB, T, n);
+	strassensMultRec(S, T, m1, n / 2, steps_left - 1, nextWork);
+
+	S2_add(matrixA, S, n);
+	T2_add(matrixB, T, n);
+	strassensMultRec(S, T, m2, n / 2, steps_left - 1, nextWork);
+
+	S3_add(matrixA, S, n);
+	T3_add(matrixB, T, n);
+	strassensMultRec(S, T, m3, n / 2, steps_left - 1, nextWork);
+	
+	S4_add(matrixA, S, n);
+	T4_add(matrixB, T, n);
+	strassensMultRec(S, T, m4, n / 2, steps_left - 1, nextWork);
+
+	S5_add(matrixA, S, n);
+	T5_add(matrixB, T, n);
+	strassensMultRec(S, T, m5, n / 2, steps_left - 1, nextWork);
+
+	S6_add(matrixA, S, n);
+	T6_add(matrixB, T, n);
+	strassensMultRec(S, T, m6, n / 2, steps_left - 1, nextWork);
+
+	S7_add(matrixA, S, n);
+	T7_add(matrixB, T, n);
+	strassensMultRec(S, T, m7, n / 2, steps_left - 1, nextWork);
+
+	// creating C11
+	Q1_add(matrixC, n, m1, m4, m5, m7);
+	
+	// creating C12
+	Q2_add(matrixC, n, m3, m5);
+	
+	// creating C21
+	Q3_add(matrixC, n, m2, m4);
+	
+	// creating C22
+	Q4_addSubAddAdd(matrixC, n, m1, m2, m3, m6);
+	
+	return matrixC;
 }

@@ -2,13 +2,12 @@
 #define STRASSEN_H
 #include <stdio.h>
 #include <stdlib.h>
-#include "mkl.h"
-
 #include <time.h>
+#include "mkl.h"
+#include "utils.h"
 
-double* strassensMultiplication(const double*, const double*, double* , int, int);
-double* mkl_multiplication(const double*, const double*, double*, int);
-double* strassensMultRec(const double*, const double*, double*, int n, int);
+double* strassensMultiplication(const double* matrixA, const double* matrixB, double* matrixC, int n, int steps_left, double* work);
+double* strassensMultRec(const double* matrixA, const double* matrixB, double* matrixC, int n, int steps_left, double* work);
 // double* divide(double* matrixA, int n, int row, int col);
 double* create_zero_mat(int dim);
 void printMatrix(double*, int);
