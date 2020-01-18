@@ -1,0 +1,6 @@
+﻿  matmul-implement.cpp
+D:\Code\KS\matmul-implement\matmul-implement.cpp(54): error : cannot open source file "mkl.h"
+    #include "mkl.h"
+                    ^
+  
+  compilation aborted for matmul-implement.cpp (code 4)

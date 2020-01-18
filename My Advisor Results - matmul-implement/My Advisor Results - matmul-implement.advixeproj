@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+ <connectionOption>localhost</connectionOption>
+ <rdmgr>
+  <timestamp type="u64_t">1561385611</timestamp>
+  <hostname>DESKTOP-EPHGEOE</hostname>
+  <os>windows</os>
+  <product>Intel® Advisor 2019 Update 4</product>
+  <buildNumber type="s32_t">597843</buildNumber>
+  <logicalCPUCount type="s32_t">8</logicalCPUCount>
+  <physicalCoreCount type="s32_t">4</physicalCoreCount>
+  <processorPackageCount type="s32_t">1</processorPackageCount>
+  <CPUFrequency type="s64_t">4000000000</CPUFrequency>
+  <CPUFamily type="s32_t">6</CPUFamily>
+  <CPUModel type="s32_t">94</CPUModel>
+  <CPUStepping type="s32_t">3</CPUStepping>
+  <CPUBrandName>Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz</CPUBrandName>
+  <isa>avx2</isa>
+ </rdmgr>
+ <contextValues type="bag"/>
+ <All_Configurations-All_Platforms>
+  <per_group_workloads>
+   <release>release</release>
+   <tripcounts>tripcounts</tripcounts>
+  </per_group_workloads>
+  <searchDirs>
+   <searchCategory>
+    <category type="u8_t">1</category>
+   </searchCategory>
+   <searchCategory>
+    <category type="u8_t">2</category>
+   </searchCategory>
+   <searchCategory>
+    <category type="u8_t">3</category>
+   </searchCategory>
+   <searchCategory>
+    <category type="u8_t">4</category>
+   </searchCategory>
+  </searchDirs>
+  <excludeFiles type="bag"/>
+  <target_settings>
+   <selected_workload>
+    <localhost>map</localhost>
+   </selected_workload>
+   <workloads>
+    <localhost>
+     <attach-survey type="pointer" type_id="dasID_cctrl2::AttachWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>attach-survey</targetName>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <attach.process_name>matmul-implement.exe</attach.process_name>
+       <attach.pid type="null"></attach.pid>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>auto_finalize</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>dataLimit</id>
+         <value type="s32_t">500</value>
+        </contextValue>
+        <contextValue>
+         <id>interval</id>
+         <value type="s32_t">10</value>
+        </contextValue>
+        <contextValue>
+         <id>mklUserMode</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>modules_switch</id>
+         <value>knob.modules_switch.exclude</value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>profilePython</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>spillAnalysis</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>stackStitching</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>stackwalk</id>
+         <value>offline</value>
+        </contextValue>
+        <contextValue>
+         <id>static_instruction_mix</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>support_multi_isa_binaries</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>attach-survey</value>
+        </contextValue>
+        <contextValue>
+         <id>type_opt</id>
+         <value>cpu:stack</value>
+        </contextValue>
+       </context>
+      </workload>
+     </attach-survey>
+     <attach-tripcounts type="pointer" type_id="dasID_cctrl2::AttachWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>attach-tripcounts</targetName>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <attach.process_name>matmul-implement.exe</attach.process_name>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <attach.pid type="null"></attach.pid>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>auto_finalize</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>benchmarks-sync</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>cache_config</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>count_flops</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>count_loops</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>cs_file</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>enable_cache_simulation</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>flops_and_masks</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>flops_and_masks_deprecated</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>loops</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mark-up-list</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>modules_switch</id>
+         <value>knob.modules_switch.exclude</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>profilePython</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>profile_jit</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>stackStitching</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>stacks</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>attach-tripcounts</value>
+        </contextValue>
+        <contextValue>
+         <id>trip_counts</id>
+         <value type="bool">true</value>
+        </contextValue>
+       </context>
+      </workload>
+     </attach-tripcounts>
+     <debug type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>debug</targetName>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch.userapppath>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch.userapppath>
+       <launch.userappworkdir>D:\Code\KS\matmul-implement</launch.userappworkdir>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <launch_app.app_to_launch>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch_app.app_to_launch>
+       <launch_app.working_folder>D:\Code\KS\matmul-implement</launch_app.working_folder>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <launch_app.environment></launch_app.environment>
+       <launch_app.environment_prepend>PATH=D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\compiler;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\mkl;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\daal;</launch_app.environment_prepend>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>analysis_mode</id>
+         <value>default</value>
+        </contextValue>
+        <contextValue>
+         <id>instance_of_interest</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loop_call_count_limit</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loops</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mark-up-list</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>reduction_filtering</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>scope_filtering</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>stack_offset</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>stop_after</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>suppressions</id>
+         <value>none</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>debug</value>
+        </contextValue>
+        <contextValue>
+         <id>vsdbg_support</id>
+         <value>off</value>
+        </contextValue>
+       </context>
+      </workload>
+     </debug>
+     <map type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>map</targetName>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch.userapppath>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch.userapppath>
+       <launch.userappworkdir>D:\Code\KS\matmul-implement</launch.userappworkdir>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <launch_app.app_to_launch>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch_app.app_to_launch>
+       <launch_app.working_folder>D:\Code\KS\matmul-implement</launch_app.working_folder>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <launch_app.environment></launch_app.environment>
+       <launch_app.environment_prepend>PATH=D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\compiler;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\mkl;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\daal;</launch_app.environment_prepend>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>cachesimAssociativity</id>
+         <value>8</value>
+        </contextValue>
+        <contextValue>
+         <id>cachesimSets</id>
+         <value>256</value>
+        </contextValue>
+        <contextValue>
+         <id>cachesim_cacheline_size</id>
+         <value>64</value>
+        </contextValue>
+        <contextValue>
+         <id>cachesim_mode</id>
+         <value>utilization</value>
+        </contextValue>
+        <contextValue>
+         <id>enableCacheSimulation</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>instance_of_interest</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loop_call_count_limit</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loops</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mark-up-list</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>recordHeapMemory</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>recordStackFrame</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>suppressions</id>
+         <value>none</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>map</value>
+        </contextValue>
+       </context>
+      </workload>
+     </map>
+     <release type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>release</targetName>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch.userapppath>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch.userapppath>
+       <launch.userappworkdir>D:\Code\KS\matmul-implement</launch.userappworkdir>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <launch_app.app_to_launch>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch_app.app_to_launch>
+       <launch_app.working_folder>D:\Code\KS\matmul-implement</launch_app.working_folder>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <launch_app.environment></launch_app.environment>
+       <launch_app.environment_prepend>PATH=D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\compiler;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\mkl;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\daal;</launch_app.environment_prepend>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>auto_finalize</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>dataLimit</id>
+         <value type="s32_t">500</value>
+        </contextValue>
+        <contextValue>
+         <id>interval</id>
+         <value type="s32_t">10</value>
+        </contextValue>
+        <contextValue>
+         <id>mklUserMode</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>modules_switch</id>
+         <value>knob.modules_switch.exclude</value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>profilePython</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>spillAnalysis</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>stackStitching</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>stackwalk</id>
+         <value>offline</value>
+        </contextValue>
+        <contextValue>
+         <id>static_instruction_mix</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>support_multi_isa_binaries</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>release</value>
+        </contextValue>
+        <contextValue>
+         <id>type_opt</id>
+         <value>cpu:stack</value>
+        </contextValue>
+       </context>
+      </workload>
+     </release>
+     <suitability type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>suitability</targetName>
+       <launch_app.app_to_launch>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch_app.app_to_launch>
+       <launch_app.working_folder>D:\Code\KS\matmul-implement</launch_app.working_folder>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <launch_app.environment></launch_app.environment>
+       <launch_app.environment_prepend>PATH=D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\compiler;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\mkl;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\daal;</launch_app.environment_prepend>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>dataLimit</id>
+         <value type="s32_t">500</value>
+        </contextValue>
+        <contextValue>
+         <id>interval</id>
+         <value type="s32_t">10</value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>suitability</value>
+        </contextValue>
+        <contextValue>
+         <id>type_opt</id>
+         <value>projection:stack</value>
+        </contextValue>
+       </context>
+      </workload>
+     </suitability>
+     <tripcounts type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>tripcounts</targetName>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch.userapppath>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch.userapppath>
+       <launch.userappworkdir>D:\Code\KS\matmul-implement</launch.userappworkdir>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <launch_app.app_to_launch>D:\Code\KS\matmul-implement\x64\Release\matmul-implement.exe</launch_app.app_to_launch>
+       <launch_app.working_folder>D:\Code\KS\matmul-implement</launch_app.working_folder>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <launch_app.environment></launch_app.environment>
+       <launch_app.environment_prepend>PATH=D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\compiler;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\mkl;D:\Software\IntelSWTools\compilers_and_libraries_2019\windows\redist\intel64\daal;</launch_app.environment_prepend>
+       <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
+       <result_directory.path>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+        <item>
+         <value>bin=D:\Code\KS\matmul-implement\x64\Release</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>auto_finalize</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>benchmarks-sync</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>cache_config</id>
+         <value>2:8w:128k:64l/1:4w:1m:64l</value>
+        </contextValue>
+        <contextValue>
+         <id>count_flops</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>count_loops</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>cs_file</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>enable_cache_simulation</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>flops_and_masks</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>flops_and_masks_deprecated</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>loops</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mark-up-list</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>modules_switch</id>
+         <value>knob.modules_switch.exclude</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>profilePython</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>profile_jit</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>stackStitching</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>stacks</id>
+         <value type="bool">false</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>tripcounts</value>
+        </contextValue>
+        <contextValue>
+         <id>trip_counts</id>
+         <value type="bool">true</value>
+        </contextValue>
+       </context>
+      </workload>
+     </tripcounts>
+    </localhost>
+   </workloads>
+   <result_dir>
+    <localhost>D:\Code\KS\matmul-implement\My Advisor Results - matmul-implement</localhost>
+   </result_dir>
+   <result_pattern>
+    <localhost>r@@@{at}</localhost>
+   </result_pattern>
+  </target_settings>
+ </All_Configurations-All_Platforms>
+</root>
